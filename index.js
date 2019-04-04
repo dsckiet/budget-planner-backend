@@ -8,6 +8,9 @@ const cors = require('cors');
 require('dotenv').config();
 require('./config/dbconnection');
 
+const User = require("./models/User");
+const Transaction = require("./models/Transaction");
+
 app.use(cors());
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({
