@@ -162,8 +162,7 @@ module.exports.dashboard_data = (req, res) => {
                                     data.offline = offlineSum;
                                     data.budget = user.wallet.budget;
                                     data.left_amount = data.budget - (data.online + data.offline);
-                                    if (data.left_amount > 0) data.savings = 1
-                                    else data.savings = 0
+                                    data.left_amount > 0 ? data.savings = 1 : data.savings = 0
                                     res.json({message: 'success', data: data})
                                 })                            
                         })
