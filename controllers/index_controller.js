@@ -119,6 +119,11 @@ module.exports.transactions_in_last_month = (req, res) => {
             let monthago = new Date(today.setDate(today.getDate() - 30))
 
             Transaction.find({created_at: {$gt: monthago}}, (err, transactions) => {
+                let sum = 0;
+                transactions.forEach((transaction) => {
+                    sum += transaction.amount
+                })
+                console.log(sum)
                 if(err) return res.status(404).json({message: 'error'});
                 return res.json({message: 'success', transactions:  transactions})
             });
@@ -127,3 +132,43 @@ module.exports.transactions_in_last_month = (req, res) => {
     })
 }
 
+module.exports.dashboard_data = (req, res) => {
+    User.findOne({email: req.params.email}, (err, user) => {
+        if(err) return res.status(404).json({message: 'error', data: ''});
+        if(user){
+            let today = new Date;
+            let monthago = new Date(today.setDate(today.getDate() - 30))
+
+            let onlineSum = 0;
+            let offlineSum = 0;
+
+            let data = {}
+            Transaction.find({})
+                .sort({'created_at': -1})
+                .limit(5)
+                .exec((err, transactions) => {
+                    data.transactions = transactions;
+                    Transaction.find({created_at: {$gt: monthago}, type: 'online'})
+                        .exec((err, transactions) => {
+                            transactions.forEach((transaction) => {
+                                onlineSum += transaction.amount
+                            })
+                            Transaction.find({created_at: {$gt: monthago}, type: 'offline'})
+                                .exec((err, transactions) => {
+                                    transactions.forEach((transaction) => {
+                                        offlineSum += transaction.amount
+                                    })
+                                    data.online = onlineSum;
+                                    data.offline = offlineSum;
+                                    data.budget = user.wallet.budget;
+                                    data.left_amount = data.budget - (data.online + data.offline);
+                                    if (data.left_amount > 0) data.savings = 1
+                                    else data.savings = 0
+                                    res.json({message: 'success', data: data})
+                                })                            
+                        })
+                });        
+        }
+        else return res.status(400).json({message: 'no user found', data: ''});
+    })    
+}

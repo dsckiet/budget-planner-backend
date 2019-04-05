@@ -17,4 +17,6 @@ router.post('/edit_user_budget/:email', indexController.edit_user_budget);
 
 router.get('/transactions_in_last_month/:email', indexController.transactions_in_last_month);
 
+router.get('/dashboard/:email', indexController.dashboard_data);
+
 module.exports = router;
