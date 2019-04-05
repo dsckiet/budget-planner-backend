@@ -23,10 +23,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', require('./routes/index'));
+app.use('/api/v1/', require('./routes/api/v1/index'));
 
 app.get('*', (req, res) => {
-    res.send('notfound');
+    res.json({message: 'no api found'});
 });
 
 app.listen(process.env.PORT, (err) => {
