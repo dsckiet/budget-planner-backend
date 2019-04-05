@@ -45,7 +45,7 @@ module.exports.complete_user_profile = (req, res) => {
                 return res.json({message: 'user profile completed'});
             });
         }
-        else return res.json({message: 'user already exists found'});
+        else return res.json({message: 'profile not found'});
     });
 }
 
@@ -62,7 +62,7 @@ module.exports.add_offline_transaction = (req, res) => {
             newTransaction.save()
                 .then((transaction) => {
                     let updateContent = {
-                        wallet:{
+                        wallet: {
                             budget: user.wallet.budget,
                             spent: user.wallet.spent + Number(req.body.amount)
                         }
@@ -80,3 +80,50 @@ module.exports.add_offline_transaction = (req, res) => {
         else return res.status(400).json({message: 'no user found'});
     })
 }
+
+module.exports.user_profile = (req, res) => {
+    User.findOne({email: req.params.email}, (err, user) => {
+        if(err) return res.status(404).json({message: 'error', user: ''});
+        if(user){
+            res.json({message: 'success', user: user})
+        }
+        else return res.status(400).json({message: 'no user found', user: ''});
+    })
+}
+
+module.exports.edit_user_budget = (req, res) => {
+    User.findOne({email: req.params.email}, (err, user) => {
+        if(err) return res.status(404).json({message: 'error'});
+        if(user){
+            let newBudget = {
+                wallet: {
+                    budget: req.body.budget,
+                    spent: user.wallet.spent
+                }
+            }
+
+            User.updateOne({email: user.email}, newBudget, (err,updatedBudget) => {
+                if(err) return res.status(404).json({message: 'error'});
+                return res.json({message: 'budget updated'});
+            })
+        }
+        else return res.status(400).json({message: 'no user found'});
+    })
+}
+
+module.exports.transactions_in_last_month = (req, res) => {
+    User.findOne({email: req.params.email}, (err, user) => {
+        if(err) return res.status(404).json({message: 'error', transactions: ''});
+        if(user){
+            let today = new Date;
+            let monthago = new Date(today.setDate(today.getDate() - 30))
+
+            Transaction.find({created_at: {$gt: monthago}}, (err, transactions) => {
+                if(err) return res.status(404).json({message: 'error'});
+                return res.json({message: 'success', transactions:  transactions})
+            });
+        }
+        else return res.status(400).json({message: 'no user found', transactions: ''});
+    })
+}
+
