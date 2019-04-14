@@ -5,11 +5,9 @@ const indexController = require('../../../controllers/index_controller');
 
 router.get('/test', indexController.test);
 
-router.post('/add_offline_transaction/:email', indexController.add_offline_transaction);
+router.post('/add_transaction/:email', indexController.add_transaction);
 
 router.post('/add_user/:email', indexController.add_user);
-
-router.post('/complete_user_profile/:email', indexController.complete_user_profile);
 
 router.get('/user/:email', indexController.user_profile);
 

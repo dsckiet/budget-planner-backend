@@ -26,30 +26,8 @@ module.exports.add_user = (req, res) => {
     });
 }
 
-module.exports.complete_user_profile = (req, res) => {
-    User.findOne({email: req.params.email}, (err, user) => {
-        if (err) return res.status(404).json({message: 'error'});
-        if (user) {
-            let userDetails = {
-                imageUrl: req.body.imageUrl,
-                phone: req.body.phone,
-                username: req.body.username,
-                wallet: {
-                    budget: req.body.budget,
-                    spent: 0
-                }
-            };
-
-            User.updateOne({email: user.email}, userDetails, (err, userUpdated) => {
-                if (err) return res.status(404).json({message: 'error'});
-                return res.json({message: 'user profile completed'});
-            });
-        }
-        else return res.json({message: 'profile not found'});
-    });
-}
-
-module.exports.add_offline_transaction = (req, res) => {
+module.exports.add_transaction = (req, res) => {
+    console.log(req.body);
     User.findOne({email: req.params.email}, (err, user) => {
         if(err) return res.status(404).json({message: 'error'});
         if(user){
