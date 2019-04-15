@@ -5,6 +5,7 @@ module.exports.test = (req, res) => {
 };
 
 module.exports.add_user = (req, res) => {
+    console.log(req.body);
     User.findOne({email: req.params.email}, (err, user) => {
         if (err) return res.status(404).json({message: 'error'});
         if (user) return res.json({message: 'user already exists'});
